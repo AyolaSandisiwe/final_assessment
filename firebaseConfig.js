@@ -1,25 +1,15 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getDatabase } from "firebase/database";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase config for React Native
+// Use this config with @react-native-firebase/app or the modular SDK
+// Do NOT use analytics in React Native
 const firebaseConfig = {
-  apiKey: "AIzaSyDJyRQsWKTC9WhNOaLzliiiQClfnW_-MBU",
-  authDomain: "test2-6a1d7.firebaseapp.com",
-  projectId: "test2-6a1d7",
-  storageBucket: "test2-6a1d7.firebasestorage.app",
-  messagingSenderId: "98527691765",
-  appId: "1:98527691765:web:568cad36c3897848a256bc",
-  measurementId: "G-P2YN9NT3SX"
+  apiKey: "AIzaSyB1ZRQgZrWC6XPBldBEwHTU4qi95qILjO8",
+  authDomain: "final-assessment-f1e33.firebaseapp.com",
+  projectId: "final-assessment-f1e33",
+  storageBucket: "final-assessment-f1e33.appspot.com",
+  messagingSenderId: "370345859849",
+  appId: "1:370345859849:web:103d4db3b8026c8c42d1d8",
 };
 
-// Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
-export const auth = getAuth(app);
-export const db = getDatabase(app);
+export default firebaseConfig;
+

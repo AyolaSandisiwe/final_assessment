@@ -1,56 +1,74 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { AuthProvider, AuthContext } from './contexts/AuthContext';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import ProductListScreen from './screens/ProductListScreen';
-import ProductDetailsScreen from './screens/ProductDetailsScreen';
-import CartScreen from './screens/CartScreen';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Stack = createNativeStackNavigator();
+// Import all screens
+import OnboardingScreen from './screens/OnboardingScreen';
+import SignInScreen from './src/screens/SignInScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
+import ExploreScreen from './src/screens/ExploreScreen';
+import HotelDetailsScreen from './src/screens/HotelDetailsScreen';
+import BookingScreen from './src/screens/BookingScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import DealsScreen from './src/screens/DealsScreen';
 
-function RootNavigator(){
-  const { user, loadingAuth } = useContext(AuthContext);
-  if (loadingAuth) return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Loading" component={() => null} options={{ title: 'Starting...' }} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-  if (user) {
-    return (
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Products" component={ProductListScreen} options={{ title: 'ShopEZ Products' }} />
-          <Stack.Screen name="ProductDetail" component={ProductDetailsScreen} options={{ title: 'Product Details' }} />
-          <Stack.Screen name="Cart" component={CartScreen} options={{ title: 'Your Cart' }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-  // unauthenticated navigator - explicitly start at Register
+function MainTabs() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Register">
-        <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create account' }} />
-        <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Welcome back' }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Tab.Navigator>
+      <Tab.Screen name="Explore" component={ExploreScreen} />
+      <Tab.Screen name="Deals" component={DealsScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
   );
 }
 
-import { CartProvider } from './contexts/CartContext';
-export default function App(){
-  return (
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    <AuthProvider>
-      <CartProvider>
-        <RootNavigator />
-      </CartProvider>
-    </AuthProvider>
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      const completed = await AsyncStorage.getItem('onboardingComplete');
+      setShowOnboarding(completed !== 'true');
+    };
+    checkOnboarding();
+    const unsubscribe = auth().onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  if (loading || showOnboarding === null) return null;
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {showOnboarding ? (
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        ) : !user ? (
+          <>
+            <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen name="HotelDetails" component={HotelDetailsScreen} />
+            <Stack.Screen name="Booking" component={BookingScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
