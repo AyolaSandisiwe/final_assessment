@@ -1,7 +1,8 @@
 
-// Firebase config for React Native
-// Use this config with @react-native-firebase/app or the modular SDK
-// Do NOT use analytics in React Native
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+
 const firebaseConfig = {
   apiKey: "AIzaSyB1ZRQgZrWC6XPBldBEwHTU4qi95qILjO8",
   authDomain: "final-assessment-f1e33.firebaseapp.com",
@@ -11,5 +12,9 @@ const firebaseConfig = {
   appId: "1:370345859849:web:103d4db3b8026c8c42d1d8",
 };
 
-export default firebaseConfig;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+export { app, auth, db };
 
